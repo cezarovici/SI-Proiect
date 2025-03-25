@@ -1,0 +1,50 @@
+# Fișiere de sistem și de configurare IDE
+__pycache__/
+*.py[cod]       # fișiere cache pentru Python
+*.pyo
+*.pyd
+*.pdb
+*.sqlite3       # fișiere de bază de date temporare
+*.db
+
+# Fișierele de configurare pentru editori
+*.vscode/       # setările de workspace pentru VS Code
+.idea/          # setările de proiect pentru PyCharm/IntelliJ
+*.swp           # fișiere swap pentru editori de text
+*~              # fișiere temporare pentru editori
+
+# Fișiere generate de PyQt Designer
+*.ui            # fișierele generate automat de PyQt Designer
+*.qrc           # fișiere de resurse PyQt
+*.bak           # fișiere backup temporare
+
+# Fișiere specifice de compilare PyQt5
+*.pyc           # fișiere de bytecode pentru Python
+*.so            # biblioteci partajate (Linux)
+*.dll           # biblioteci dinamice (Windows)
+*.o             # obiecte de compilare
+
+# Fișiere și directoare Docker
+docker-compose.override.yml
+.docker/
+Dockerfile
+
+# Fișiere jurnal
+*.log           # fișiere de tip jurnal
+*.out           # fișiere de output
+
+# Fișiere și directoare pentru virtualenv
+env/
+venv/
+.venv/
+ENV/
+ENV.bak/
+
+# Fișiere de pachete și distribuții
+*.egg-info/
+dist/
+build/
+*.wheel
+
+# Fișiere și directoare test
+tests/__pycache__/
