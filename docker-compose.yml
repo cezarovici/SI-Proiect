@@ -1,0 +1,38 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootsi
+      MYSQL_DATABASE: encryption_db
+      MYSQL_USER: si
+      MYSQL_PASSWORD: si
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - app-network
+
+
+  fastapi:
+    build: 
+      context: .
+      dockerfile: ./BackendFastApi/Dockerfile
+    environment:
+      MYSQL_DATABASE: encryption_db
+      MYSQL_USER: si
+      MYSQL_PASSWORD: si
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
