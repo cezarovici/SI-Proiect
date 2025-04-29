@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
 from models import Algorithm
+from db import get_db
 
 app = FastAPI()
 

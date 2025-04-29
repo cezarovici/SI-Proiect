@@ -13,7 +13,6 @@ services:
     networks:
       - app-network
 
-
   fastapi:
     build: 
       context: .

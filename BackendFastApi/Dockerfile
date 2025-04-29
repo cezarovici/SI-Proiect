@@ -13,4 +13,4 @@ EXPOSE 8000
 
 #RUN pytest app/test_main.py -v || exit 1
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+CMD ["fastapi", "run", "app/main.py", "--port", "8000"]
