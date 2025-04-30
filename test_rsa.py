@@ -1,4 +1,4 @@
-from algorithms.rsa_algorithm import *
+from algorithms.rsa_openSSL import *
 from algorithms.encryption_algorithm import EncryptionResult
 import os
 

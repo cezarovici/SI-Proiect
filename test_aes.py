@@ -1,4 +1,4 @@
-from algorithms.aes_algorithm import AESAlgorithm
+from algorithms.aes_openSSL import AESAlgorithm
 from algorithms.encryption_algorithm import EncryptionResult
 
 def create_test_file(filename, content):

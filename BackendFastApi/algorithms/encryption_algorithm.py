@@ -18,11 +18,11 @@ class EncryptionAlgorithm(ABC):
         self.algorithm_name = algorithm_name
     
     @abstractmethod
-    def encrypt_file(self, input_file: str, output_file: str, key_id: str) -> EncryptionResult:
+    def encrypt_file(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
         pass
     
     @abstractmethod
-    def decrypt_file(self, input_file: str, output_file: str, key_id: str) -> EncryptionResult:
+    def decrypt_file(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
         pass
     
     @abstractmethod
