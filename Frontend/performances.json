@@ -1,0 +1,40 @@
+{
+    "performances": [
+        {
+            "performance_id": 1,
+            "file_id": 1,
+            "algorithm_id": 101,
+            "key_id": 1,
+            "operation_type": "encrypt",
+            "execution_time_ms": 125.7,
+            "memory_usage_mb": 30.5,
+            "success": true,
+            "error_message": null,
+            "timestamp": "2025-04-30 10:15:00"
+        },
+        {
+            "performance_id": 2,
+            "file_id": 2,
+            "algorithm_id": 102,
+            "key_id": 2,
+            "operation_type": "decrypt",
+            "execution_time_ms": 98.3,
+            "memory_usage_mb": 25.0,
+            "success": true,
+            "error_message": null,
+            "timestamp": "2025-04-30 10:20:00"
+        },
+        {
+            "performance_id": 3,
+            "file_id": 3,
+            "algorithm_id": 103,
+            "key_id": 3,
+            "operation_type": "encrypt",
+            "execution_time_ms": 215.4,
+            "memory_usage_mb": 45.7,
+            "success": false,
+            "error_message": "Insufficient memory",
+            "timestamp": "2025-04-30 10:30:00"
+        }
+    ]
+}

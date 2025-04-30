@@ -1,0 +1,37 @@
+{
+    "files": [
+        {
+            "file_id": 1,
+            "original_path": "/home/user/documents/report.pdf",
+            "encrypted_path": "/home/user/encrypted/report.enc",
+            "original_hash": "a6c4f5d7e8b2a1c3...",
+            "encrypted_hash": "e9f8b7c6d5a4b3...",
+            "algorithm_id": 101,
+            "key_id": 1,
+            "encryption_date": "2025-04-30 08:30:00",
+            "last_access": "2025-04-30 08:35:00"
+        },
+        {
+            "file_id": 2,
+            "original_path": "/home/user/images/photo.jpg",
+            "encrypted_path": "/home/user/encrypted/photo.enc",
+            "original_hash": "b7d8e9c6f5a4b3...",
+            "encrypted_hash": "d9c8b7e6f5a4b3...",
+            "algorithm_id": 102,
+            "key_id": 2,
+            "encryption_date": "2025-04-30 09:15:00",
+            "last_access": "2025-04-30 09:20:00"
+        },
+        {
+            "file_id": 3,
+            "original_path": "/home/user/videos/movie.mp4",
+            "encrypted_path": "/home/user/encrypted/movie.enc",
+            "original_hash": "c8b7d6e5f4a3b2...",
+            "encrypted_hash": "e8d7c6b5a4f3b2...",
+            "algorithm_id": 103,
+            "key_id": 3,
+            "encryption_date": "2025-04-30 10:00:00",
+            "last_access": "2025-04-30 10:10:00"
+        }
+    ]
+}

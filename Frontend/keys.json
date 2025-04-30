@@ -1,0 +1,37 @@
+{
+    "keys": [
+        {
+            "key_id": 1,
+            "algorithm_id": 101,
+            "key_name": "AES_Key",
+            "key_value": "5e884898da28047151d0e56f8dc6292773603dc9",
+            "public_key": null,
+            "private_key": null,
+            "creation_date": "2025-04-30 08:56:00",
+            "expiration_date": "2026-04-30 08:56:00",
+            "is_active": true
+        },
+        {
+            "key_id": 2,
+            "algorithm_id": 102,
+            "key_name": "RSA_Key",
+            "key_value": null,
+            "public_key": "MIIBIjANBgkqhkiG9w0BAQE...",
+            "private_key": "MIIEvQIBADANBgkqhkiG9w0BA...",
+            "creation_date": "2025-04-30 09:00:00",
+            "expiration_date": "2027-04-30 09:00:00",
+            "is_active": true
+        },
+        {
+            "key_id": 3,
+            "algorithm_id": 103,
+            "key_name": "ECC_Key",
+            "key_value": null,
+            "public_key": "04bfcab6c9ab...",
+            "private_key": "c9ab15f6742b...",
+            "creation_date": "2025-04-30 09:05:00",
+            "expiration_date": "2026-10-30 09:05:00",
+            "is_active": false
+        }
+    ]
+}
