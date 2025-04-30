@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import get_db
-from crud.file_schema import FileCreate, FileResponse
+from crud.file_crud import FileCreate, FileResponse
 from crud import file_crud
 
 router = APIRouter(prefix="/files", tags=["Files"])
