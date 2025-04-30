@@ -118,7 +118,64 @@ class UserInterface(QWidget):
                 background-color: #3e8e41;
             }
         """)
+
         self.buton_exit.clicked.connect(self.close)
+
+        #butoane secundare
+        self.buton_addfile = QPushButton('Add new file', self)
+        self.buton_addfile.hide()
+        self.buton_addfile.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                font-size: 16px;
+                margin: 4px 2px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #3e8e41;
+            }
+        """)
+        self.buton_addfile.clicked.connect(self.adauga_fisier)
+
+        self.buton_add_key = QPushButton('Add a new key', self)
+        self.buton_add_key.hide()
+        self.buton_add_key.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                font-size: 16px;
+                margin: 4px 2px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #3e8e41;
+            }
+        """)
+        
+        self.buton_sterge_fisier = QPushButton('Delete a file')
+        self.buton_sterge_fisier.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                font-size: 16px;
+                margin: 4px 2px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #3e8e41;
+            }
+        """)
+        self.buton_sterge_fisier.clicked.connect(self.sterge_fisier)
+
+
+
         self.main_widgets = [self.buton_alg, self.buton_keys, self.buton_files, 
                              self.buton_exit, self.copyrightt, self.subtitlu, 
                              self.titlu, self.buton_performances]
@@ -311,21 +368,21 @@ class UserInterface(QWidget):
             }
         """)
 
-        self.buton_add_key = QPushButton('Add a new key', self)
-        self.buton_add_key.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        # self.buton_add_key = QPushButton('Add a new key', self)
+        # self.buton_add_key.setStyleSheet("""
+        #     QPushButton {
+        #         background-color: #4CAF50;
+        #         color: white;
+        #         padding: 15px 32px;
+        #         text-align: center;
+        #         font-size: 16px;
+        #         margin: 4px 2px;
+        #         border-radius: 5px;
+        #     }
+        #     QPushButton:hover {
+        #         background-color: #3e8e41;
+        #     }
+        # """)
 
         self.buton_back.clicked.connect(self.show_menu)
         self.nvl_func(self.tabel_keys)
@@ -416,38 +473,38 @@ class UserInterface(QWidget):
             }
         """)
 
-        self.buton_addfile = QPushButton('Add new file', self)
-        self.buton_addfile.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        # self.buton_addfile = QPushButton('Add new file', self)
+        # self.buton_addfile.setStyleSheet("""
+        #     QPushButton {
+        #         background-color: #4CAF50;
+        #         color: white;
+        #         padding: 15px 32px;
+        #         text-align: center;
+        #         font-size: 16px;
+        #         margin: 4px 2px;
+        #         border-radius: 5px;
+        #     }
+        #     QPushButton:hover {
+        #         background-color: #3e8e41;
+        #     }
+        # """)
 
-        self.buton_sterge_fisier = QPushButton('Delete a file')
-        self.buton_sterge_fisier.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
-        self.buton_sterge_fisier.clicked.connect(self.sterge_fisier)
+        # self.buton_sterge_fisier = QPushButton('Delete a file')
+        # self.buton_sterge_fisier.setStyleSheet("""
+        #     QPushButton {
+        #         background-color: #4CAF50;
+        #         color: white;
+        #         padding: 15px 32px;
+        #         text-align: center;
+        #         font-size: 16px;
+        #         margin: 4px 2px;
+        #         border-radius: 5px;
+        #     }
+        #     QPushButton:hover {
+        #         background-color: #3e8e41;
+        #     }
+        # """)
+        # self.buton_sterge_fisier.clicked.connect(self.sterge_fisier)
 
         
 
@@ -457,7 +514,7 @@ class UserInterface(QWidget):
         self.vbox_layout.addWidget(self.buton_back)
         self.vbox_layout.addWidget(self.buton_addfile)
         self.vbox_layout.addWidget(self.buton_sterge_fisier)
-        self.buton_addfile.clicked.connect(self.adauga_fisier)
+        # self.buton_addfile.clicked.connect(self.adauga_fisier)
 
     ########################### afisarea tabelului in "View performances" ################################
     def afisare_tabel_performances(self):
@@ -541,6 +598,7 @@ class UserInterface(QWidget):
                 background-color: #3e8e41;
             }
         """)
+        
         self.buton_back.clicked.connect(self.show_menu)
         self.nvl_func(self.tabel_performances)
         self.vbox_layout.addWidget(self.buton_back)
