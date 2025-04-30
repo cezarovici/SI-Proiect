@@ -9,9 +9,6 @@ class Algorithm(Base):
     algorithm_id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), unique=True, nullable=False)
     type = Column(Enum('symmetric', 'asymmetric'), nullable=False)
-    parameters = Column(Text)
-    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
-    updated_at = Column(TIMESTAMP, server_default=func.current_timestamp(), onupdate=func.current_timestamp())
 
 class Key(Base):
     __tablename__ = 'keys'
@@ -52,3 +49,5 @@ class Performance(Base):
     success = Column(Boolean, default=True)
     error_message = Column(Text)
     timestamp = Column(TIMESTAMP, server_default=func.current_timestamp())
+
+
