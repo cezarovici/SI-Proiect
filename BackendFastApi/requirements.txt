@@ -4,3 +4,5 @@ pymysql
 uvicorn
 python-multipart
 cryptography
+
+psutil
