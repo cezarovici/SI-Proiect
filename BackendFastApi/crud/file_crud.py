@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from models.file_model import File
-from models.file_model import FileCreate
+from schemas.file_schemas import FileCreate
 
 def create_file(db: Session, file_data: FileCreate):
-    file_obj = File(**file_data.dict())
+    file_obj = File(**file_data)
     db.add(file_obj)
     db.commit()
     db.refresh(file_obj)
