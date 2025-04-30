@@ -41,7 +41,7 @@ class RSAAlgorithm(EncryptionAlgorithm):
 
         return public_key, private_key
 
-    def encrypt_file(self, input_file: str, output_file: str, public_key_str: str) -> EncryptionResult:
+    def encrypt(self, input_file: str, output_file: str, public_key_str: str) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
@@ -75,7 +75,7 @@ class RSAAlgorithm(EncryptionAlgorithm):
         )
 
 
-    def decrypt_file(self, input_file: str, output_file: str, private_key_str: str) -> EncryptionResult:
+    def decrypt(self, input_file: str, output_file: str, private_key_str: str) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss

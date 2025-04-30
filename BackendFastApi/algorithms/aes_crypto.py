@@ -10,7 +10,7 @@ class AESCryptography(EncryptionAlgorithm):
     def __init__(self):
         super().__init__("AES")
 
-    def encrypt_file(self, input_file: str, output_file: str, key: bytes) -> EncryptionResult:
+    def encrypt(self, input_file: str, output_file: str, key: bytes) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
@@ -40,7 +40,7 @@ class AESCryptography(EncryptionAlgorithm):
             print(f"[AES] Eroare la criptare: {e}")
             return EncryptionResult(False, None, 0, 0, self.algorithm_name, key_id=None)
 
-    def decrypt_file(self, input_file: str, output_file: str, key: bytes) -> EncryptionResult:
+    def decrypt(self, input_file: str, output_file: str, key: bytes) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss

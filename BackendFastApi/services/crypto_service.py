@@ -11,7 +11,7 @@ def get_algorithm_instance(name: str):
         raise ValueError("Unsupported algorithm")
 
 
-def encrypt_file(input_path, output_path, key_data, algorithm_name) -> EncryptionResult:
+def encrypt(input_path, output_path, key_data, algorithm_name) -> EncryptionResult:
     algo = get_algorithm_instance(algorithm_name)
     try:
         return algo.encrypt(input_path, output_path, key_data)
@@ -20,7 +20,7 @@ def encrypt_file(input_path, output_path, key_data, algorithm_name) -> Encryptio
         return EncryptionResult(False, None, 0, 0, algorithm_name, "N/A")
 
 
-def decrypt_file(input_path, output_path, key_data, algorithm_name) -> EncryptionResult:
+def decrypt(input_path, output_path, key_data, algorithm_name) -> EncryptionResult:
     algo = get_algorithm_instance(algorithm_name)
     try:
         return algo.decrypt(input_path, output_path, key_data)

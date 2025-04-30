@@ -3,12 +3,13 @@ import os
 from .encryption_algorithm import EncryptionAlgorithm, EncryptionResult
 import time
 import psutil
+import hashlib
 
 class AESAlgorithm(EncryptionAlgorithm):
     def __init__(self):
         super().__init__("AES")
     
-    def encrypt_file(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
+    def encrypt(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
@@ -16,11 +17,16 @@ class AESAlgorithm(EncryptionAlgorithm):
         iv = os.urandom(16)
         temp_enc_file = "temp_encrypted"
 
+        if isinstance(key, str):
+            key_bytes = hashlib.sha256(key.encode()).digest()
+        else:
+            key_bytes = key
+
         subprocess.run([
             'openssl', 'enc', '-aes-256-cbc',
             '-in', input_file,
             '-out', temp_enc_file,
-            '-K', key.hex(),
+            '-K', key_bytes.hex(),
             '-iv', iv.hex()
         ], check=True)
 
@@ -38,7 +44,7 @@ class AESAlgorithm(EncryptionAlgorithm):
         return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key)
         
 
-    def decrypt_file(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
+    def decrypt(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
@@ -49,11 +55,16 @@ class AESAlgorithm(EncryptionAlgorithm):
             with open(temp_enc_file, 'wb') as f_temp:
                 f_temp.write(f_in.read())
 
+        if isinstance(key, str):
+            key_bytes = hashlib.sha256(key.encode()).digest()
+        else:
+            key_bytes = key
+
         subprocess.run([
             'openssl', 'enc', '-d', '-aes-256-cbc',
             '-in', temp_enc_file,
             '-out', output_file,
-            '-K', key.hex(),
+            '-K', key_bytes.hex(),
             '-iv', iv.hex()
         ], check=True)
 
@@ -68,12 +79,12 @@ class AESAlgorithm(EncryptionAlgorithm):
     
 
     #-------------------------------------------------------------------------------------
-    #def generate_key(self, key_length: int = 256) -> str:
-    #    if key_length not in [128, 192, 256]:
-    #        raise ValueError("Lungime cheie AES invalida. 128, 192, 256")
-    #    
-    #    key = os.urandom(key_length // 8)
-    #    key_id = f"aes_key_{int(time.time())}"
-    #    self.keys[key_id] = key  # Stochează temporar cheia
-    #    
-    #    return key_id
+    def generate_key(self, key_length: int = 256) -> str:
+        if key_length not in [128, 192, 256]:
+            raise ValueError("Lungime cheie AES invalida. 128, 192, 256")
+        
+        key = os.urandom(key_length // 8)
+        key_id = f"aes_key_{int(time.time())}"
+        self.keys[key_id] = key  # Stochează temporar cheia
+        
+        return key_id
