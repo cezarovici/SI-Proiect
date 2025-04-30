@@ -12,40 +12,30 @@ class AESAlgorithm(EncryptionAlgorithm):
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
-        try:
-            if not key:
-                return EncryptionResult(False, None, 0, 0, self.algorithm_name, key)
 
-            iv = os.urandom(16)
-            temp_enc_file = "temp_encrypted"
+        iv = os.urandom(16)
+        temp_enc_file = "temp_encrypted"
 
-            subprocess.run([
-                'openssl', 'enc', '-aes-256-cbc',
-                '-in', input_file,
-                '-out', temp_enc_file,
-                '-K', key.hex(),
-                '-iv', iv.hex()
-            ], check=True)
+        subprocess.run([
+            'openssl', 'enc', '-aes-256-cbc',
+            '-in', input_file,
+            '-out', temp_enc_file,
+            '-K', key.hex(),
+            '-iv', iv.hex()
+        ], check=True)
 
-            with open(output_file, 'wb') as f_out:
-                f_out.write(iv)
-                with open(temp_enc_file, 'rb') as f_temp:
-                    f_out.write(f_temp.read())
+        with open(output_file, 'wb') as f_out:
+            f_out.write(iv)
+            with open(temp_enc_file, 'rb') as f_temp:
+                f_out.write(f_temp.read())
 
-            os.remove(temp_enc_file)
+        os.remove(temp_enc_file)
 
-            time_taken = time.time() - start_time
-            mem_after = process.memory_info().rss
-            memory_used = mem_after - mem_before
+        time_taken = time.time() - start_time
+        mem_after = process.memory_info().rss
+        memory_used = mem_after - mem_before
 
-            return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key)
-
-        except subprocess.CalledProcessError as e:
-            print(f"Eroare criptare: {e}")
-            return EncryptionResult(False, None, 0, 0, self.algorithm_name, key)
-        except Exception as e:
-            print(f"eroare generala: {e}")
-            return EncryptionResult(False, None, 0, 0, self.algorithm_name, key)
+        return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key)
         
 
     def decrypt_file(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
@@ -53,35 +43,28 @@ class AESAlgorithm(EncryptionAlgorithm):
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
 
-        try:
-            if not key:
-                return EncryptionResult(False, None, 0, 0, self.algorithm_name, key)
+        temp_enc_file = "temp_decrypt"
+        with open(input_file, 'rb') as f_in:
+            iv = f_in.read(16)
+            with open(temp_enc_file, 'wb') as f_temp:
+                f_temp.write(f_in.read())
 
-            temp_enc_file = "temp_decrypt"
-            with open(input_file, 'rb') as f_in:
-                iv = f_in.read(16)
-                with open(temp_enc_file, 'wb') as f_temp:
-                    f_temp.write(f_in.read())
+        subprocess.run([
+            'openssl', 'enc', '-d', '-aes-256-cbc',
+            '-in', temp_enc_file,
+            '-out', output_file,
+            '-K', key.hex(),
+            '-iv', iv.hex()
+        ], check=True)
 
-            subprocess.run([
-                'openssl', 'enc', '-d', '-aes-256-cbc',
-                '-in', temp_enc_file,
-                '-out', output_file,
-                '-K', key.hex(),
-                '-iv', iv.hex()
-            ], check=True)
+        os.remove(temp_enc_file)
 
-            os.remove(temp_enc_file)
+        time_taken = time.time() - start_time
+        mem_after = process.memory_info().rss
+        memory_used = mem_after - mem_before
 
-            time_taken = time.time() - start_time
-            mem_after = process.memory_info().rss
-            memory_used = mem_after - mem_before
+        return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key)
 
-            return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key)
-
-        except Exception as e:
-            print(f"eroare decriptare: {e}")
-            return EncryptionResult(False, None, 0, 0, self.algorithm_name, key)
     
 
     #-------------------------------------------------------------------------------------

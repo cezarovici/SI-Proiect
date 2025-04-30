@@ -10,7 +10,6 @@ class Algorithm(Base):
     name = Column(String(50), unique=True, nullable=False)
     type = Column(Enum('symmetric', 'asymmetric'), nullable=False)
 
-
 class Key(Base):
     __tablename__ = 'keys'
 
@@ -50,3 +49,5 @@ class Performance(Base):
     success = Column(Boolean, default=True)
     error_message = Column(Text)
     timestamp = Column(TIMESTAMP, server_default=func.current_timestamp())
+
+
