@@ -1,5 +1,5 @@
 from .aes_algorithm import AESAlgorithm
-from .rsa_algorithm import RSAAlgorithm  # Va fi implementat mai târziu
+from .rsa_algorithm import RSAAlgorithm  
 
 class AlgorithmFactory:
     @staticmethod
@@ -8,6 +8,6 @@ class AlgorithmFactory:
         if algorithm_name == "aes":
             return AESAlgorithm()
         elif algorithm_name == "rsa":
-            return RSAAlgorithm()  # De implementat
+            return RSAAlgorithm() 
         else:
             raise ValueError(f"Algoritm necunoscut: {algorithm_name}")

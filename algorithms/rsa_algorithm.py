@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import psutil
 from .encryption_algorithm import EncryptionAlgorithm, EncryptionResult
 
 class RSAAlgorithm(EncryptionAlgorithm):
@@ -33,6 +34,8 @@ class RSAAlgorithm(EncryptionAlgorithm):
 
     def encrypt_file(self, input_file: str, output_file: str, key_id: str) -> EncryptionResult:
         start_time = time.time()
+        process = psutil.Process(os.getpid())
+        mem_before = process.memory_info().rss
 
         try:
             pubkey_path = os.path.join(self.key_dir, f"{key_id}_public.pem")
@@ -46,12 +49,14 @@ class RSAAlgorithm(EncryptionAlgorithm):
             ], check=True)
 
             time_taken = time.time() - start_time
+            mem_after = process.memory_info().rss
+            memory_used = mem_after - mem_before
 
             return EncryptionResult(
                 success=True,
                 output_file=output_file,
                 time_taken=time_taken,
-                memory_used=0,
+                memory_used=memory_used,
                 algorithm_name=self.algorithm_name,
                 key_id=key_id
             )
@@ -62,6 +67,8 @@ class RSAAlgorithm(EncryptionAlgorithm):
 
     def decrypt_file(self, input_file: str, output_file: str, key_id: str) -> EncryptionResult:
         start_time = time.time()
+        process = psutil.Process(os.getpid())
+        mem_before = process.memory_info().rss
 
         try:
             privkey_path = os.path.join(self.key_dir, f"{key_id}_private.pem")
@@ -74,12 +81,14 @@ class RSAAlgorithm(EncryptionAlgorithm):
             ], check=True)
 
             time_taken = time.time() - start_time
+            mem_after = process.memory_info().rss
+            memory_used = mem_after - mem_before
 
             return EncryptionResult(
                 success=True,
                 output_file=output_file,
                 time_taken=time_taken,
-                memory_used=0,
+                memory_used=memory_used,
                 algorithm_name=self.algorithm_name,
                 key_id=key_id
             )
