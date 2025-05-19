@@ -21,17 +21,6 @@
             "key_id": 2,
             "encryption_date": "2025-04-30 09:15:00",
             "last_access": "2025-04-30 09:20:00"
-        },
-        {
-            "file_id": 3,
-            "original_path": "/home/user/videos/movie.mp4",
-            "encrypted_path": "/home/user/encrypted/movie.enc",
-            "original_hash": "c8b7d6e5f4a3b2...",
-            "encrypted_hash": "e8d7c6b5a4f3b2...",
-            "algorithm_id": 103,
-            "key_id": 3,
-            "encryption_date": "2025-04-30 10:00:00",
-            "last_access": "2025-04-30 10:10:00"
         }
     ]
 }
