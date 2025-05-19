@@ -1,8 +1,7 @@
 from sqlalchemy import TIMESTAMP, Boolean, Column, DateTime, ForeignKey, Integer, String, func
 
-from db import Base
+from app.db import Base
 
-   
 class File(Base):
     __tablename__ = 'files'
     

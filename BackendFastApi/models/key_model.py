@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, TIMESTAMP
 from sqlalchemy.sql import func
-from db import Base
+from app.db import Base
 
 class Key(Base):
     __tablename__ = 'keys'

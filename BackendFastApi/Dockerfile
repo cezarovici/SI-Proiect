@@ -11,6 +11,6 @@ COPY ./BackendFastApi/ /code/app
 
 EXPOSE 8000
 
-#RUN pytest app/test_main.py -v || exit 1
+RUN pytest -v app/tests/
 
 CMD ["fastapi", "run", "app/main.py", "--port", "8000"]

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from db import get_db
+from app.db import get_db
 from crud.key_crud import create_key, delete_key, get_all_keys, get_key_by_id
 
 router = APIRouter(prefix="/keys", tags=["Keys"])
