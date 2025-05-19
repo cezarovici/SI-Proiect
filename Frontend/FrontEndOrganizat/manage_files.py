@@ -1,13 +1,28 @@
-# manage_files.py
+import requests
+import threading
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QPushButton
 from PyQt5.QtGui import QPalette, QBrush, QLinearGradient, QColor
+from PyQt5.QtCore import pyqtSignal, QObject
+
+class FileWorker(QObject):
+    finished = pyqtSignal(list)
+
+    def fetch_files(self, url):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()  # presupunem că API-ul returnează listă de dict-uri
+            self.finished.emit(data)
+        except Exception as e:
+            print(f"Error fetching files: {e}")
+            self.finished.emit([])
 
 class ManageFilesWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Manage Files")
-        
         self.init_ui()
+        self.load_data()
 
     def init_ui(self):
         self.setFixedSize(1000, 700)
@@ -49,46 +64,7 @@ class ManageFilesWindow(QWidget):
             "Last Access"
         ])
 
-        # Exemplu de date modificate pentru a include toate câmpurile tabelei
-        sample_files = [
-            {
-                "file_id": 1, 
-                "original_path": "/home/user/documents/file1.txt", 
-                "encrypted_path": "/home/user/documents/file1.txt.enc", 
-                "original_hash": "a4f5e2b6c3...", 
-                "encrypted_hash": "b7c8d9e3f4...", 
-                "algorithm_id": 1, 
-                "key_id": 101, 
-                "encryption_date": "2025-05-20 00:00:00", 
-                "last_access": "2025-05-20 12:15:00"
-            },
-            {
-                "file_id": 2, 
-                "original_path": "/home/user/docs/file2.pdf", 
-                "encrypted_path": "/home/user/docs/file2.pdf.enc", 
-                "original_hash": "d2a7b9e5c4...", 
-                "encrypted_hash": "e6f3g8h1i9...", 
-                "algorithm_id": 2, 
-                "key_id": 102, 
-                "encryption_date": "2025-05-19 22:30:00", 
-                "last_access": "2025-05-20 08:50:00"
-            }
-        ]
-
-        self.table.setRowCount(len(sample_files))
-        for i, file in enumerate(sample_files):
-            self.table.setItem(i, 0, QTableWidgetItem(str(file["file_id"])))
-            self.table.setItem(i, 1, QTableWidgetItem(file["original_path"]))
-            self.table.setItem(i, 2, QTableWidgetItem(file["encrypted_path"]))
-            self.table.setItem(i, 3, QTableWidgetItem(file["original_hash"] if file["original_hash"] else "N/A"))
-            self.table.setItem(i, 4, QTableWidgetItem(file["encrypted_hash"] if file["encrypted_hash"] else "N/A"))
-            self.table.setItem(i, 5, QTableWidgetItem(str(file["algorithm_id"])))
-            self.table.setItem(i, 6, QTableWidgetItem(str(file["key_id"])))
-            self.table.setItem(i, 7, QTableWidgetItem(file["encryption_date"]))
-            self.table.setItem(i, 8, QTableWidgetItem(file["last_access"] if file["last_access"] else "N/A"))
-
         layout.addWidget(self.table)
-
 
         self.btn_back = QPushButton("Back", self)
         self.btn_back.clicked.connect(self.close)
@@ -111,3 +87,25 @@ class ManageFilesWindow(QWidget):
         layout.addLayout(hbox2)
 
         self.setLayout(layout)
+
+    def load_data(self):
+        url = "http://localhost:8000/files"  # schimbă cu API-ul tău real
+
+        self.worker = FileWorker()
+        self.worker.finished.connect(self.populate_table)
+
+        thread = threading.Thread(target=self.worker.fetch_files, args=(url,))
+        thread.start()
+
+    def populate_table(self, files):
+        self.table.setRowCount(len(files))
+        for i, file in enumerate(files):
+            self.table.setItem(i, 0, QTableWidgetItem(str(file.get("file_id", ""))))
+            self.table.setItem(i, 1, QTableWidgetItem(file.get("original_path", "")))
+            self.table.setItem(i, 2, QTableWidgetItem(file.get("encrypted_path", "")))
+            self.table.setItem(i, 3, QTableWidgetItem(file.get("original_hash") or "N/A"))
+            self.table.setItem(i, 4, QTableWidgetItem(file.get("encrypted_hash") or "N/A"))
+            self.table.setItem(i, 5, QTableWidgetItem(str(file.get("algorithm_id", ""))))
+            self.table.setItem(i, 6, QTableWidgetItem(str(file.get("key_id", ""))))
+            self.table.setItem(i, 7, QTableWidgetItem(file.get("encryption_date", "")))
+            self.table.setItem(i, 8, QTableWidgetItem(file.get("last_access") or "N/A"))

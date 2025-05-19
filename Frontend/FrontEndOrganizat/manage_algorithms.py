@@ -1,13 +1,28 @@
-# manage_algorithms.py
+import requests
+import threading
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton
 from PyQt5.QtGui import QPalette, QBrush, QLinearGradient, QColor
+from PyQt5.QtCore import pyqtSignal, QObject
+
+class Worker(QObject):
+    finished = pyqtSignal(list)
+
+    def fetch_algorithms(self, url):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json() 
+            self.finished.emit(data)
+        except Exception as e:
+            print(f"Error fetching data: {e}")
+            self.finished.emit([])
 
 class ManageAlgorithmsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Manage Algorithms")
-        
         self.init_ui()
+        self.load_data()
 
     def init_ui(self):
         self.setFixedSize(1000, 700)
@@ -35,7 +50,6 @@ class ManageAlgorithmsWindow(QWidget):
 
         layout = QVBoxLayout()
 
-        # Creăm un tabel cu informații despre algoritmi; în practică vei lucra cu date din baza de date
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels([
@@ -46,42 +60,29 @@ class ManageAlgorithmsWindow(QWidget):
             "Created At", 
             "Updated At"
         ])
-
-        # Exemplu de date modificate pentru a include și câmpurile de timp
-        sample_algorithms = [
-            {
-                "algorithm_id": 1, 
-                "name": "AES", 
-                "type": "symmetric", 
-                "parameters": "key=256", 
-                "created_at": "2025-05-20 00:00:00", 
-                "updated_at": "2025-05-20 00:00:00"
-            },
-            {
-                "algorithm_id": 2, 
-                "name": "RSA", 
-                "type": "asymmetric", 
-                "parameters": "key=2048", 
-                "created_at": "2025-05-20 00:00:00", 
-                "updated_at": "2025-05-20 00:00:00"
-            }
-        ]
-
-        self.table.setRowCount(len(sample_algorithms))
-        for i, alg in enumerate(sample_algorithms):
-            self.table.setItem(i, 0, QTableWidgetItem(str(alg["algorithm_id"])))
-            self.table.setItem(i, 1, QTableWidgetItem(alg["name"]))
-            self.table.setItem(i, 2, QTableWidgetItem(alg["type"]))
-            self.table.setItem(i, 3, QTableWidgetItem(alg["parameters"]))
-            self.table.setItem(i, 4, QTableWidgetItem(alg["created_at"]))
-            self.table.setItem(i, 5, QTableWidgetItem(alg["updated_at"]))
-
         layout.addWidget(self.table)
 
-
-        # Buton de revenire (în mod simplu se închide fereastra)
         self.btn_back = QPushButton("Back", self)
         self.btn_back.clicked.connect(self.close)
         layout.addWidget(self.btn_back)
 
         self.setLayout(layout)
+
+    def load_data(self):
+        url = "http://localhost:8000/algorithms/"
+
+        self.worker = Worker()
+        self.worker.finished.connect(self.populate_table)
+
+        thread = threading.Thread(target=self.worker.fetch_algorithms, args=(url,))
+        thread.start()
+
+    def populate_table(self, algorithms):
+        self.table.setRowCount(len(algorithms))
+        for i, alg in enumerate(algorithms):
+            self.table.setItem(i, 0, QTableWidgetItem(str(alg.get("algorithm_id", ""))))
+            self.table.setItem(i, 1, QTableWidgetItem(alg.get("name", "")))
+            self.table.setItem(i, 2, QTableWidgetItem(alg.get("type", "")))
+            self.table.setItem(i, 3, QTableWidgetItem(alg.get("parameters", "")))
+            self.table.setItem(i, 4, QTableWidgetItem(alg.get("created_at", "")))
+            self.table.setItem(i, 5, QTableWidgetItem(alg.get("updated_at", "")))
