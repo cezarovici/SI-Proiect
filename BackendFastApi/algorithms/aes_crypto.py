@@ -5,21 +5,29 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 from .encryption_algorithm import EncryptionAlgorithm, EncryptionResult
+import hashlib # Adăugați acest import
 
 class AESCryptography(EncryptionAlgorithm):
     def __init__(self):
-        super().__init__("AES")
+        super().__init__("AES-Cryptography") # Numele algoritmului actualizat pentru claritate
 
-    def encrypt(self, input_file: str, output_file: str, key: bytes) -> EncryptionResult:
+    def encrypt(self, input_file: str, output_file: str, key_param: str) -> EncryptionResult: # key_param este string
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
 
         try:
-            iv = os.urandom(16)
+            if isinstance(key_param, str):
+                key = hashlib.sha256(key_param.encode('utf-8')).digest() # Generează cheie de 32 bytes (256 biți)
+            elif isinstance(key_param, bytes) and len(key_param) in [16, 24, 32]:
+                key = key_param
+            else:
+                raise ValueError("Cheia AES trebuie să fie un string sau o secvență de 16, 24, sau 32 de octeți.")
+
+            iv = os.urandom(16) # IV pentru AES CBC este de 16 octeți
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
             encryptor = cipher.encryptor()
-            padder = padding.PKCS7(128).padder()
+            padder = padding.PKCS7(algorithms.AES.block_size).padder() # algorithms.AES.block_size este 128 biți
 
             with open(input_file, "rb") as f:
                 plaintext = f.read()
@@ -34,38 +42,45 @@ class AESCryptography(EncryptionAlgorithm):
             mem_after = process.memory_info().rss
             memory_used = mem_after - mem_before
 
-            return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key_id=None)
+            return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key_id="derived_from_string")
 
         except Exception as e:
-            print(f"[AES] Eroare la criptare: {e}")
-            return EncryptionResult(False, None, 0, 0, self.algorithm_name, key_id=None)
+            print(f"[{self.algorithm_name}] Eroare la criptare: {e}")
+            return EncryptionResult(False, None, time.time() - start_time, mem_after - mem_before if 'mem_before' in locals() and 'mem_after' in locals() else 0, self.algorithm_name, key_id=None)
 
-    def decrypt(self, input_file: str, output_file: str, key: bytes) -> EncryptionResult:
+    def decrypt(self, input_file: str, output_file: str, key_param: str) -> EncryptionResult: # key_param este string
         start_time = time.time()
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss
 
         try:
+            if isinstance(key_param, str):
+                key = hashlib.sha256(key_param.encode('utf-8')).digest()
+            elif isinstance(key_param, bytes) and len(key_param) in [16, 24, 32]:
+                key = key_param
+            else:
+                raise ValueError("Cheia AES trebuie să fie un string sau o secvență de 16, 24, sau 32 de octeți.")
+
             with open(input_file, "rb") as f:
-                iv = f.read(16)
+                iv = f.read(16) # Citim IV-ul (16 octeți)
                 ciphertext = f.read()
 
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
             decryptor = cipher.decryptor()
-            unpadder = padding.PKCS7(128).unpadder()
+            unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
 
             padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
             plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
 
-            with open(output_file, "wb") as f:
+            with open(output_file, "wb") as f: # Deschidem în mod binar pentru scriere
                 f.write(plaintext)
 
             time_taken = time.time() - start_time
             mem_after = process.memory_info().rss
             memory_used = mem_after - mem_before
 
-            return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key_id=None)
+            return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key_id="derived_from_string")
 
         except Exception as e:
-            print(f"[AES] Eroare la decriptare: {e}")
-            return EncryptionResult(False, None, 0, 0, self.algorithm_name, key_id=None)
+            print(f"[{self.algorithm_name}] Eroare la decriptare: {e}")
+            return EncryptionResult(False, None, time.time() - start_time, mem_after - mem_before if 'mem_before' in locals() and 'mem_after' in locals() else 0, self.algorithm_name, key_id=None)

@@ -77,14 +77,3 @@ class AESAlgorithm(EncryptionAlgorithm):
         return EncryptionResult(True, output_file, time_taken, memory_used, self.algorithm_name, key)
 
     
-
-    #-------------------------------------------------------------------------------------
-    def generate_key(self, key_length: int = 256) -> str:
-        if key_length not in [128, 192, 256]:
-            raise ValueError("Lungime cheie AES invalida. 128, 192, 256")
-        
-        key = os.urandom(key_length // 8)
-        key_id = f"aes_key_{int(time.time())}"
-        self.keys[key_id] = key  # Stochează temporar cheia
-        
-        return key_id
