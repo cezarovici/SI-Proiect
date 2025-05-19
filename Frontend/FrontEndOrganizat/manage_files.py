@@ -1,5 +1,5 @@
 # manage_files.py
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QPushButton
 from PyQt5.QtGui import QPalette, QBrush, QLinearGradient, QColor
 
 class ManageFilesWindow(QWidget):
@@ -93,5 +93,21 @@ class ManageFilesWindow(QWidget):
         self.btn_back = QPushButton("Back", self)
         self.btn_back.clicked.connect(self.close)
         layout.addWidget(self.btn_back)
+
+        hbox1 = QHBoxLayout()
+        self.btn_addfile = QPushButton("Add a file", self)
+        hbox1.addWidget(self.btn_addfile)
+
+        self.btn_deletefile = QPushButton("Delete a file", self)
+        hbox1.addWidget(self.btn_deletefile)
+        layout.addLayout(hbox1)
+
+        hbox2 = QHBoxLayout()
+        self.btn_encrfile = QPushButton("Encrypt", self)
+        hbox2.addWidget(self.btn_encrfile)
+
+        self.btn_decrfile = QPushButton("Decrypt", self)
+        hbox2.addWidget(self.btn_decrfile)
+        layout.addLayout(hbox2)
 
         self.setLayout(layout)

@@ -94,4 +94,11 @@ class ManageKeysWindow(QWidget):
         self.btn_back.clicked.connect(self.close)
         layout.addWidget(self.btn_back)
 
+        self.btn_addkey = QPushButton("Add a key", self)
+        layout.addWidget(self.btn_addkey)
+
+        self.btn_deletekey = QPushButton("Delete a key", self)
+        layout.addWidget(self.btn_deletekey)
+
+
         self.setLayout(layout)
