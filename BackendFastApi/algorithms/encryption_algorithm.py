@@ -25,6 +25,3 @@ class EncryptionAlgorithm(ABC):
     def decrypt(self, input_file: str, output_file: str, key: str) -> EncryptionResult:
         pass
     
-    @abstractmethod
-    def generate_key(self, key_length: int = None) -> str:
-        pass
