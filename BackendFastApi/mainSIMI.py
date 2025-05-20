@@ -1,6 +1,5 @@
-# main_test.py
+
 import os
-# get_algorithm_instance este acum importat și folosit din crypto_service
 from services.crypto_service import encrypt, decrypt, get_algorithm_instance
 
 def main():

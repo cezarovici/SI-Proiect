@@ -1,9 +1,10 @@
 import subprocess
 import os
-from .encryption_algorithm import EncryptionAlgorithm, EncryptionResult
 import time
 import psutil
 import hashlib
+
+from .encryption_algorithm import EncryptionAlgorithm, EncryptionResult
 
 class AESAlgorithm(EncryptionAlgorithm):
     def __init__(self):

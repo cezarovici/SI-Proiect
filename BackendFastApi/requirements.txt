@@ -3,6 +3,6 @@ sqlalchemy
 pymysql
 uvicorn
 python-multipart
-cryptography
 
+cryptography
 psutil
