@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from db import get_db
+from app.db import get_db
 from crud.algorithm_crud import create_algorithm, get_all_algorithms, get_algorithm_by_id, delete_algorithm
 
 router = APIRouter(prefix="/algorithms", tags=["Algorithms"])

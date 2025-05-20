@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QApplication, QInputDialog, QWidget, QFileDialog, QM
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QBrush, QLinearGradient, QColor
 
+
 class UserInterface(QWidget):
     def __init__(self):
         super().__init__()
@@ -31,6 +32,21 @@ class UserInterface(QWidget):
         self.copyrightt = QLabel('© SI 2025 \nApetroaei Cezar-Stefan\nSimion Iustin-Denis\nAnastasiei Narcis-Stefan', self)
         self.copyrightt.setStyleSheet("font-size: 11px; font-weight: bold; text-align: center;")
         self.copyrightt.setFixedWidth(500)
+
+        self.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                font-size: 16px;
+                margin: 4px 2px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #3e8e41;
+            }
+        """)
         
 
         self.buton_alg = QPushButton('Manage algorithms')
@@ -39,139 +55,35 @@ class UserInterface(QWidget):
         self.buton_performances = QPushButton('View performances')
         self.buton_exit = QPushButton('Exit')
 
-        self.buton_alg.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         self.buton_alg.clicked.connect(self.afisare_tabel_algorithms)
 
-        self.buton_keys.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         self.buton_keys.clicked.connect(self.afisare_tabel_keys)
 
-        self.buton_files.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         self.buton_files.clicked.connect(self.afisare_tabel_files)
 
-        self.buton_performances.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
 
         self.buton_performances.clicked.connect(self.afisare_tabel_performances)
 
-        self.buton_exit.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
 
         self.buton_exit.clicked.connect(self.close)
 
         #butoane secundare
         self.buton_addfile = QPushButton('Add new file', self)
         self.buton_addfile.hide()
-        self.buton_addfile.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         self.buton_addfile.clicked.connect(self.adauga_fisier)
 
         self.buton_add_key = QPushButton('Add a new key', self)
         self.buton_add_key.hide()
-        self.buton_add_key.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         
         self.buton_sterge_fisier = QPushButton('Delete a file')
-        self.buton_sterge_fisier.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         self.buton_sterge_fisier.clicked.connect(self.sterge_fisier)
 
 
@@ -210,22 +122,36 @@ class UserInterface(QWidget):
         for widget in self.main_widgets:
             widget.hide()
 
-        try:
-            base_path = os.path.dirname(__file__) 
-            json_path = os.path.join(base_path, "algorithms.json")
+        fastapi_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'BackendFastApi'))
+        if fastapi_path not in sys.path:
+            sys.path.append(fastapi_path)
+        # try:
+        #     base_path = os.path.dirname(__file__) 
+        #     json_path = os.path.join(base_path, "algorithms.json")
 
-            with open(json_path, "r") as json_file:
-                data = json.load(json_file)
-        except FileNotFoundError:
-            print("Nu am gasit niciun fisier JSON.")
-            return
+        #     with open(json_path, "r") as json_file:
+        #         data = json.load(json_file)
+        # except FileNotFoundError:
+        #     print("Nu am gasit niciun fisier JSON.")
+        #     return
         
-        algoritmi = data["algorithms"]
+        # algoritmi = data["algorithms"]
+        try:
+            # Asigură-te că calea către SessionLocal și funcția get_all_algorithms este corectă
+            from db import SessionLocal  
+            from crud.algorithm_crud import get_all_algorithms  # sau din 'crud.py' dacă structura e diferită
+            db = SessionLocal()
+            algoritmi = get_all_algorithms(db)
+        except Exception as e:
+            print("Eroare la extragerea datelor din baza de date:", e)
+            return
+        finally:
+            db.close()
         
         self.tabel_algor = QTableWidget(self)
         self.tabel_algor.setRowCount(len(algoritmi))
-        self.tabel_algor.setColumnCount(6)  
-        self.tabel_algor.setHorizontalHeaderLabels(["ID", "Name", "Type", "Parameters", "Created At", "Updated At"])
+        self.tabel_algor.setColumnCount(4)  
+        self.tabel_algor.setHorizontalHeaderLabels(["ID", "Name", "Type", "Parameters"])
         self.tabel_algor.horizontalHeader().setStyleSheet("""
             QHeaderView::section {
                 background-color: #4CAF55;
@@ -258,8 +184,6 @@ class UserInterface(QWidget):
             self.tabel_algor.setItem(i, 1, QTableWidgetItem(algoritm["name"]))
             self.tabel_algor.setItem(i, 2, QTableWidgetItem(algoritm["type"]))
             self.tabel_algor.setItem(i, 3, QTableWidgetItem(json.dumps(algoritm["parameters"])))
-            self.tabel_algor.setItem(i, 4, QTableWidgetItem(algoritm["created_at"])) 
-            self.tabel_algor.setItem(i, 5, QTableWidgetItem(algoritm["updated_at"]))
 
         self.tabel_algor.resizeColumnsToContents()
         self.vbox_layout.addWidget(self.tabel_algor)
@@ -353,20 +277,7 @@ class UserInterface(QWidget):
         self.vbox_layout.addWidget(self.tabel_keys)
 
         self.buton_back = QPushButton('Back', self)
-        self.buton_back.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
 
         # self.buton_add_key = QPushButton('Add a new key', self)
         # self.buton_add_key.setStyleSheet("""
@@ -458,20 +369,7 @@ class UserInterface(QWidget):
         self.vbox_layout.addWidget(self.tabel_files)
 
         self.buton_back = QPushButton('Back', self)
-        self.buton_back.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
 
         # self.buton_addfile = QPushButton('Add new file', self)
         # self.buton_addfile.setStyleSheet("""
@@ -584,20 +482,7 @@ class UserInterface(QWidget):
         self.vbox_layout.addWidget(self.tabel_performances)
 
         self.buton_back = QPushButton('Back', self)
-        self.buton_back.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: #3e8e41;
-            }
-        """)
+        
         
         self.buton_back.clicked.connect(self.show_menu)
         self.nvl_func(self.tabel_performances)

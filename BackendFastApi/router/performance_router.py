@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from db import get_db
+from app.db import get_db
 from crud import performance_crud
 
 router = APIRouter(prefix="/performance", tags=["Performance"])

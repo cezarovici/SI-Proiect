@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Enum
-from db import Base
+from app.db import Base
 
 class Algorithm(Base):
     __tablename__ = 'algorithms'

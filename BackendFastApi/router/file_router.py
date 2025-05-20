@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from db import get_db
+from app.db import get_db
 from schemas.file_schemas import FileCreate, FileResponse
 from crud import file_crud
 

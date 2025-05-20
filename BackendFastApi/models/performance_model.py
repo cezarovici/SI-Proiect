@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, ForeignKey, Float, Boolean, Enum, Text, TIMESTAMP, func
-from db import Base
+from app.db import Base
 
 class Performance(Base):
     __tablename__ = 'performance'

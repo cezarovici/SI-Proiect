@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, Float, TIMESTAMP, Enum
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from db import Base
+from app.db import Base
 
 class Algorithm(Base):
     __tablename__ = 'algorithms'
