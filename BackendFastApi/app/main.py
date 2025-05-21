@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
-from init_db import create_tables
+from .init_db import create_tables
 from router import algorithm_router, file_router, key_router, performance_router
 
 app = FastAPI()
