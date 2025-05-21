@@ -1,7 +1,5 @@
-from app.db import Base, engine, SessionLocal
+from .db import Base, engine, SessionLocal
 from models.algorithm_model import Algorithm
-from models.key_model import Key
-from models.file_model import File  
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
