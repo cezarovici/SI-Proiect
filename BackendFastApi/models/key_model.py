@@ -7,7 +7,7 @@ class Key(Base):
 
     key_id = Column(Integer, primary_key=True, index=True)
     algorithm_id = Column(Integer, ForeignKey('algorithms.algorithm_id', ondelete="CASCADE", onupdate="CASCADE"))
-    key_name = Column(String(100), nullable=False)
+    key_name = Column(String(100))
     key_value = Column(Text)
     public_key = Column(Text)
     private_key = Column(Text)

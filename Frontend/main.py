@@ -584,8 +584,75 @@ class UserInterface(QWidget):
         
         self.tabel_files.removeRow(selected_row)
 
+        
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     gui = UserInterface()
     sys.exit(app.exec_())
+
+
+    '''
+    CREATE TABLE algorithms (
+    algorithm_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    type ENUM('symmetric', 'asymmetric') NOT NULL,
+    parameters TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE keys (
+    key_id INT PRIMARY KEY AUTO_INCREMENT,
+    algorithm_id INT NOT NULL,
+    key_name VARCHAR(100) NOT NULL,
+    key_value TEXT,
+    public_key TEXT,
+    private_key TEXT,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expiration_date TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (algorithm_id) REFERENCES algorithms(algorithm_id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE files (
+    file_id INT PRIMARY KEY AUTO_INCREMENT,
+    original_path VARCHAR(255) NOT NULL,
+    encrypted_path VARCHAR(255) NOT NULL,
+    original_hash VARCHAR(64),
+    encrypted_hash VARCHAR(64),
+    algorithm_id INT NOT NULL,
+    key_id INT NOT NULL,
+    encryption_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_access TIMESTAMP,
+    FOREIGN KEY (algorithm_id) REFERENCES algorithms(algorithm_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (key_id) REFERENCES keys(key_id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE performance (
+    performance_id INT PRIMARY KEY AUTO_INCREMENT,
+    file_id INT NOT NULL,
+    algorithm_id INT NOT NULL,
+    key_id INT NOT NULL,
+    operation_type ENUM('encrypt', 'decrypt') NOT NULL,
+    execution_time_ms FLOAT NOT NULL,
+    memory_usage_mb FLOAT NOT NULL,
+    success BOOLEAN DEFAULT TRUE,
+    error_message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (file_id) REFERENCES files(file_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (algorithm_id) REFERENCES algorithms(algorithm_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (key_id) REFERENCES keys(key_id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+    ---------------------------
+
+    INSERT INTO algorithms (name, type, parameters)
+VALUES ('AES-256', 'symmetric', '{"key_size": 256, "mode": "CBC"}'),
+       ('RSA-2048', 'asymmetric', '{"key_size": 2048}'),
+       ('ChaCha20', 'symmetric', '{"key_size": 256, "nonce_size": 12}');
+
+    
+    
+    '''

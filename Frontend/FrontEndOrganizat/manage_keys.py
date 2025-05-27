@@ -2,10 +2,13 @@ import requests
 import threading
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton,
-    QMessageBox, QInputDialog, QLineEdit
+    QMessageBox, QInputDialog
 )
 from PyQt5.QtGui import QPalette, QBrush, QLinearGradient, QColor
 from PyQt5.QtCore import pyqtSignal, QObject
+
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 class Worker(QObject):
     finished = pyqtSignal(object)
@@ -38,12 +41,32 @@ class Worker(QObject):
             print(f"Error deleting key: {e}")
             self.finished.emit(False)
 
+    def generate_key(self, key_length: int = 2048):
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=key_length
+        )
+        public_key = private_key.public_key()
+
+        private_bytes = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+
+        public_bytes = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+
+        return public_bytes.decode(), private_bytes.decode()
+
 
 class ManageKeysWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Manage Keys")
-        self.api_base_url = "http://localhost:8000/keys"  # URL API chei
+        self.api_base_url = "http://localhost:8000/keys"
         self.init_ui()
         self.load_data()
 
@@ -55,29 +78,29 @@ class ManageKeysWindow(QWidget):
         gradient.setColorAt(1, QColor(200, 220, 250))
         palette.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(palette)
+
         self.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
                 padding: 15px 32px;
-                text-align: center;
                 font-size: 16px;
-                margin: 4px 2px;
                 border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #3e8e41;
             }
         """)
+
         layout = QVBoxLayout()
 
         self.table = QTableWidget()
-        self.table.setColumnCount(9)
+        self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels([
-            "Key ID", "Algorithm ID", "Key Name", "Key Value",
-            "Public Key", "Private Key", "Creation Date",
-            "Expiration Date", "Is Active"
+            "Key ID", "Algorithm ID", "Public Key", "Private Key (partial)"
         ])
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+
         layout.addWidget(self.table)
 
         self.btn_back = QPushButton("Back", self)
@@ -88,11 +111,51 @@ class ManageKeysWindow(QWidget):
         self.btn_addkey.clicked.connect(self.add_key)
         layout.addWidget(self.btn_addkey)
 
+        self.btn_generate_rsa = QPushButton("Generate RSA Key", self)
+        self.btn_generate_rsa.clicked.connect(self.generate_rsa_key)
+        layout.addWidget(self.btn_generate_rsa)
+
         self.btn_deletekey = QPushButton("Delete a key", self)
         self.btn_deletekey.clicked.connect(self.delete_key)
         layout.addWidget(self.btn_deletekey)
 
         self.setLayout(layout)
+
+    def generate_rsa_key(self):
+        key_id, ok = QInputDialog.getText(self, "Generate RSA Key", "Enter Key ID:")
+        if not ok or not key_id:
+            return
+
+        algorithm_id = "2"  # RSA
+
+        try:
+            worker = Worker()
+            public_key, private_key = worker.generate_key()
+
+            key_data = {
+                "key_id": key_id,
+                "algorithm_id": algorithm_id,
+                "public_key": public_key,
+                "private_key": private_key
+            }
+
+            def handle_response(response):
+                if response is None:
+                    QMessageBox.warning(self, "Error", "Nu s-a putut genera și salva cheia.")
+                else:
+                    QMessageBox.information(self, "Success", "Cheia RSA a fost generată și salvată.")
+                    self.load_data()
+
+            self.worker = Worker()
+            self.worker.finished.connect(handle_response)
+            thread = threading.Thread(target=self.worker.post_key, args=(self.api_base_url, key_data))
+            thread.start()
+
+        except Exception as e:
+            print(f"Eroare la generarea cheii RSA: {e}")
+            QMessageBox.warning(self, "Error", "A apărut o eroare la generarea cheii.")
+
+
 
     def load_data(self):
         self.worker = Worker()
@@ -107,34 +170,63 @@ class ManageKeysWindow(QWidget):
         for i, key in enumerate(keys):
             self.table.setItem(i, 0, QTableWidgetItem(str(key.get("key_id", ""))))
             self.table.setItem(i, 1, QTableWidgetItem(str(key.get("algorithm_id", ""))))
-            self.table.setItem(i, 2, QTableWidgetItem(key.get("key_name", "")))
-            self.table.setItem(i, 3, QTableWidgetItem(key.get("key_value") or "N/A"))
-            self.table.setItem(i, 4, QTableWidgetItem(key.get("public_key") or "N/A"))
-            self.table.setItem(i, 5, QTableWidgetItem(key.get("private_key") or "N/A"))
-            self.table.setItem(i, 6, QTableWidgetItem(key.get("creation_date", "")))
-            self.table.setItem(i, 7, QTableWidgetItem(key.get("expiration_date") or "N/A"))
-            self.table.setItem(i, 8, QTableWidgetItem("Active" if key.get("is_active") else "Inactive"))
+            self.table.setItem(i, 2, QTableWidgetItem(key.get("public_key") or "N/A"))
+            private = key.get("private_key", "N/A")
+            self.table.setItem(i, 3, QTableWidgetItem(private[:50] + "..." if private != "N/A" else "N/A"))
+
+    def add_key_to_db(self, key_id, algorithm_id, public_key, private_key):
+        key_data = {
+            "key_id": key_id,
+            "algorithm_id": algorithm_id,
+            "public_key": public_key,
+            "private_key": private_key
+        }
+
+        success_flag = []
+
+        def handle_response(response):
+            success_flag.append(response is not None)
+
+        self.worker = Worker()
+        self.worker.finished.connect(handle_response)
+        thread = threading.Thread(target=self.worker.post_key, args=(self.api_base_url, key_data))
+        thread.start()
+        thread.join()
+
+        return success_flag[0] if success_flag else False
 
     def add_key(self):
-        # Pentru simplitate, cerem doar numele cheii și algorithm_id
-        key_name, ok = QInputDialog.getText(self, "Add Key", "Enter key name:")
-        if not ok or not key_name.strip():
+        key_id, ok = QInputDialog.getText(self, "Add Key", "Enter Key ID:")
+        if not ok or not key_id:
             return
-        algorithm_id, ok = QInputDialog.getInt(self, "Add Key", "Enter algorithm ID:", min=1)
+
+        algorithm_id, ok = QInputDialog.getText(self, "Add Key", "Enter Algorithm ID (1-AES, 2-RSA):")
+        if not ok or not algorithm_id:
+            return
+
+        public_key, ok = QInputDialog.getText(self, "Add Key", "Enter Public Key:")
         if not ok:
             return
 
-        # Construim datele cheii (poți adăuga mai multe câmpuri)
+        private_key = ""  
+
+        if algorithm_id == "2":
+            private_key, ok = QInputDialog.getText(self, "Add Key", "Enter Private Key:")
+            if not ok:
+                return
+
         key_data = {
-            "key_name": key_name.strip(),
+            "key_id": key_id,
             "algorithm_id": algorithm_id,
-            # Alte câmpuri pot fi adăugate aici (key_value, public_key etc.)
+            "public_key": public_key,
+            "private_key": private_key
         }
 
         self.worker = Worker()
         self.worker.finished.connect(self.handle_add_response)
         thread = threading.Thread(target=self.worker.post_key, args=(self.api_base_url, key_data))
         thread.start()
+
 
     def handle_add_response(self, response):
         if response is None:
