@@ -2,7 +2,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 import os
 import time
-import psutil # Adăugați acest import
+import psutil
 from .encryption_algorithm import EncryptionAlgorithm, EncryptionResult
 
 
@@ -28,10 +28,8 @@ class RSACryptography(EncryptionAlgorithm):
             format=serialization.PublicFormat.SubjectPublicKeyInfo
         )
 
-        # Asigurăm ordinea (public, private)
         return public_bytes.decode(), private_bytes.decode()
 
-    # Redenumit din encrypt_file în encrypt și ajustat pentru a măsura memoria
     def encrypt(self, input_file: str, output_file: str, public_key_str: str) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
@@ -41,13 +39,9 @@ class RSACryptography(EncryptionAlgorithm):
             with open(input_file, "rb") as f:
                 plaintext = f.read()
 
-            # Verificați dimensiunea datelor pentru RSA
-            # RSA poate cripta direct doar date limitate ca dimensiune (key_size - padding)
-            # Pentru fișiere mai mari, se utilizează de obicei criptarea hibridă
-            # Aici presupunem că fișierul de intrare este suficient de mic
+         
             max_data_size = (public_key.key_size // 8) - (2 * hashes.SHA256.digest_size) - 2
             if len(plaintext) > max_data_size:
-                # Alternativ, se poate implementa criptarea hibridă aici
                 raise ValueError(f"Input data is too large for RSA direct encryption. Max size: {max_data_size} bytes.")
 
 
@@ -71,7 +65,7 @@ class RSACryptography(EncryptionAlgorithm):
                 success=True,
                 output_file=output_file,
                 time_taken=time_taken,
-                memory_used=memory_used, # Actualizat
+                memory_used=memory_used, 
                 algorithm_name=self.algorithm_name,
                 key_id="in_memory"
             )
@@ -80,7 +74,6 @@ class RSACryptography(EncryptionAlgorithm):
             print(f"[{self.algorithm_name}] Eroare la criptare: {e}")
             return EncryptionResult(False, None, time.time() - start_time, mem_after - mem_before if 'mem_before' in locals() and 'mem_after' in locals() else 0, self.algorithm_name, "in_memory")
 
-    # Redenumit din decrypt_file în decrypt și ajustat pentru a măsura memoria
     def decrypt(self, input_file: str, output_file: str, private_key_str: str) -> EncryptionResult:
         start_time = time.time()
         process = psutil.Process(os.getpid())
@@ -110,7 +103,7 @@ class RSACryptography(EncryptionAlgorithm):
                 success=True,
                 output_file=output_file,
                 time_taken=time_taken,
-                memory_used=memory_used, # Actualizat
+                memory_used=memory_used, 
                 algorithm_name=self.algorithm_name,
                 key_id="in_memory"
             )
