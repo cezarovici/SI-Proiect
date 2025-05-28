@@ -28,6 +28,9 @@ services:
     networks:
       - app-network
     restart: always
+    volumes: # ADAUGĂ ACEASTĂ SECȚIUNE
+      - ./BackendFastApi:/app # Presupun că ai deja asta
+      - D:/Facultate/AN_4/SEM_2/SI/Proiect/SI-Proiect/shared_crypto_files:/app/data 
 
 networks:
   app-network:

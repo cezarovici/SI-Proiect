@@ -23,13 +23,23 @@ class AESAlgorithm(EncryptionAlgorithm):
         else:
             key_bytes = key
 
-        subprocess.run([
-            'openssl', 'enc', '-aes-256-cbc',
-            '-in', input_file,
-            '-out', temp_enc_file,
-            '-K', key_bytes.hex(),
-            '-iv', iv.hex()
-        ], check=True)
+        try:
+            # Rulează comanda și capturează output/error
+            result = subprocess.run([
+                'openssl', 'enc', '-aes-256-cbc',
+                '-in', input_file,
+                '-out', temp_enc_file,
+                '-K', key_bytes.hex(),
+                '-iv', iv.hex()
+            ], check=True, capture_output=True, text=True, encoding='utf-8') # Adaugă capture și encoding
+            print(f"OpenSSL Success: {result.stdout}")
+
+        except subprocess.CalledProcessError as e:
+            # Afișează eroarea standard de la openssl!
+            print(f"!!! OpenSSL Error (stderr): {e.stderr}") 
+            print(f"!!! OpenSSL Output (stdout): {e.stdout}")
+            # Aruncă excepția mai departe pentru a fi prinsă în crypto_service
+            raise RuntimeError(f"OpenSSL failed: {e.stderr}") from e
 
         with open(output_file, 'wb') as f_out:
             f_out.write(iv)
