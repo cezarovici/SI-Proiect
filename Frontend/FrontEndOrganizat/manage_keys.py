@@ -132,7 +132,6 @@ class ManageKeysWindow(QWidget):
             self.table.setItem(i, 1, QTableWidgetItem(str(key.get("algorithm_id", ""))))
             self.table.setItem(i, 2, QTableWidgetItem(key.get("key_name", "N/A")))
             self.table.setItem(i, 3, QTableWidgetItem("Yes" if key.get("public_key") else "No"))
-            # Verificăm dacă e AES (are key_value) sau RSA (are private_key)
             has_private = "Yes" if (key.get("private_key") or key.get("key_value")) else "No"
             self.table.setItem(i, 4, QTableWidgetItem(has_private))
         self.table.resizeColumnsToContents()
@@ -145,7 +144,7 @@ class ManageKeysWindow(QWidget):
         if not ok2 or not key_value: return
 
         key_data = {
-            "algorithm_id": 1, # AES
+            "algorithm_id": 1, 
             "key_name": key_name,
             "key_value": key_value,
             "public_key": None,
@@ -161,7 +160,7 @@ class ManageKeysWindow(QWidget):
             worker = Worker()
             public_key, private_key = worker.generate_key()
             key_data = {
-                "algorithm_id": 2, # RSA
+                "algorithm_id": 2, 
                 "key_name": key_name,
                 "public_key": public_key,
                 "private_key": private_key,

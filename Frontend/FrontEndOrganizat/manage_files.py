@@ -1,7 +1,7 @@
 import requests
 import threading
 import hashlib
-import os # Asigură-te că os este importat
+import os 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
     QPushButton, QFileDialog, QInputDialog, QMessageBox
@@ -38,7 +38,6 @@ class FileWorker(QObject):
         try:
             response = requests.delete(url)
             response.raise_for_status()
-            # DELETE poate returna 200/204 cu sau fără corp
             data = response.json() if response.content else {"message": "Deleted successfully"}
             self.finished.emit({"type": "delete", "success": True, "data": data})
         except Exception as e:
@@ -139,7 +138,6 @@ class ManageFilesWindow(QWidget):
         """Deschide dialogul pentru adăugarea unui fișier și trimite datele COREct."""
         start_directory = self.local_shared_path
         
-        # Asigură-te că directorul există înainte de a deschide dialogul
         if not os.path.exists(start_directory):
             os.makedirs(start_directory)
             QMessageBox.information(self, "Info", f"Created shared directory at: {start_directory}")
@@ -149,7 +147,6 @@ class ManageFilesWindow(QWidget):
         if not file_path:
             return
 
-        # Verifică dacă fișierul este în directorul partajat (folosind os.path.abspath)
         if not os.path.abspath(file_path).startswith(os.path.abspath(start_directory)):
             QMessageBox.warning(self, "Warning", f"Please select a file from the shared directory: {start_directory}")
             return
@@ -162,7 +159,6 @@ class ManageFilesWindow(QWidget):
 
         file_name = os.path.basename(file_path)
         
-        # Folosește calea din container
         original_path_in_container = f"{self.container_shared_path}/{file_name}" 
         encrypted_path_in_container = f"{self.container_shared_path}/{file_name}.enc"
 
@@ -182,7 +178,6 @@ class ManageFilesWindow(QWidget):
         thread = threading.Thread(target=self.worker.post_file, args=(self.api_base_url, file_data))
         thread.start()
 
-    # Asigură-te că TOATE celelalte metode (load_data, handle_response, etc.) sunt prezente!
     def load_data(self):
         self.worker = FileWorker()
         self.worker.finished.connect(self.handle_response)
@@ -224,11 +219,10 @@ class ManageFilesWindow(QWidget):
             else:
                 error = response.get('error', {}).get('detail', 'Unknown error')
                 QMessageBox.warning(self, "Error", f"Failed to encrypt file: {error}")
-        elif response_type == "decrypt": # Ramură nouă
+        elif response_type == "decrypt":
             if response.get("success"):
                 data = response.get("data", {})
                 output_path_container = data.get("output_path", "Unknown location")
-                # Converteste calea din container la calea locala pentru mesajul userului
                 local_output_path = output_path_container.replace(self.container_shared_path, self.local_shared_path)
                 QMessageBox.information(self, "Success", f"File decrypted successfully to:\n{local_output_path}")
             else:
@@ -324,7 +318,6 @@ class ManageFilesWindow(QWidget):
             algo_id = int(self.table.item(selected_row, 5).text())
             encrypted_path = self.table.item(selected_row, 2).text()
 
-            # Verifică dacă fișierul criptat există (în container)
             if not encrypted_path or not encrypted_path.startswith(self.container_shared_path):
                  QMessageBox.warning(self, "Warning", "Encrypted file path not found or invalid.")
                  return
@@ -346,7 +339,7 @@ class ManageFilesWindow(QWidget):
             return
 
         payload = {"file_id": file_id, "implementation": implementation}
-        url = f"{self.crypto_api_url}decrypt" # Endpoint-ul nou
+        url = f"{self.crypto_api_url}decrypt" 
         self.worker = FileWorker()
         self.worker.finished.connect(self.handle_response)
         thread = threading.Thread(target=self.worker.decrypt_file, args=(url, payload))

@@ -4,7 +4,7 @@ from schemas.file_schemas import FileCreate
 
 def create_file(db: Session, file_data: FileCreate) -> File:
     """Creează un nou fișier în baza de date."""
-    # Convertim Pydantic model în dicționar pentru a crea obiectul SQLAlchemy
+
     file_obj = File(**file_data.dict()) 
     db.add(file_obj)
     db.commit()

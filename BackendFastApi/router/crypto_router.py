@@ -1,4 +1,4 @@
-# SI-Proiect/BackendFastApi/router/crypto_router.py
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db import get_db
@@ -23,21 +23,20 @@ def encrypt_file_endpoint(request: EncryptRequest, db: Session = Depends(get_db)
     if not algo_obj:
         raise HTTPException(status_code=404, detail="Algorithm not found for file")
 
-    # Validare implementare vs. algoritm
+
     if not request.implementation.lower().startswith(algo_obj.name.lower()):
          raise HTTPException(status_code=400, detail=f"Implementation '{request.implementation}' does not match file algorithm '{algo_obj.name}'")
 
     key_data = ""
-    if algo_obj.type == "symmetric": # AES
-        # Folosim cheia directă (dacă există) sau o derivăm din nume/parolă
+    if algo_obj.type == "symmetric": 
+
         key_data = key_obj.key_value or key_obj.key_name
-    elif algo_obj.type == "asymmetric": # RSA
+    elif algo_obj.type == "asymmetric": 
         key_data = key_obj.public_key
 
     if not key_data:
         raise HTTPException(status_code=400, detail="Encryption key data not found or invalid")
 
-    # Asigurăm că directoarele există
     os.makedirs(os.path.dirname(file_obj.encrypted_path), exist_ok=True)
 
     enc_result = crypto_service.encrypt(
@@ -64,7 +63,6 @@ def encrypt_file_endpoint(request: EncryptRequest, db: Session = Depends(get_db)
 
     return {"encryption_result": vars(enc_result), "performance": perf_data}
 
-# Aici se poate adăuga și un endpoint /decrypt similar
 
 
 @router.post("/decrypt")
@@ -96,10 +94,10 @@ def decrypt_file_endpoint(request: DecryptRequest, db: Session = Depends(get_db)
          raise HTTPException(status_code=400, detail=f"Implementation '{request.implementation}' does not match file algorithm '{algo_obj.name}'")
 
     key_data = ""
-    if algo_obj.type == "symmetric": # AES
+    if algo_obj.type == "symmetric":
         key_data = key_obj.key_value or key_obj.key_name
-    elif algo_obj.type == "asymmetric": # RSA
-        key_data = key_obj.private_key # <-- FOLOSIM CHEIA PRIVATĂ!
+    elif algo_obj.type == "asymmetric": 
+        key_data = key_obj.private_key
 
     if not key_data:
         print(f"ERROR: Decryption Key data is empty for Key ID {key_obj.key_id}.")
@@ -108,7 +106,7 @@ def decrypt_file_endpoint(request: DecryptRequest, db: Session = Depends(get_db)
 
     input_path = file_obj.encrypted_path
     original_filename = os.path.basename(file_obj.original_path)
-    # Definește calea de output în directorul partajat
+
     output_path = f"/app/data/DECRYPTED_{original_filename}"
 
     print(f"Decrypting: {input_path} -> {output_path} using {request.implementation}")
@@ -137,5 +135,5 @@ def decrypt_file_endpoint(request: DecryptRequest, db: Session = Depends(get_db)
         raise HTTPException(status_code=500, detail=perf_data['error_message'])
 
     print(f"--- Decrypt Request Finished ---")
-    # Returnăm și calea unde a fost salvat fișierul decriptat
+
     return {"decryption_result": vars(dec_result), "performance": perf_data, "output_path": output_path}

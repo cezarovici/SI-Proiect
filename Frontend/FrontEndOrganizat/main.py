@@ -1,4 +1,3 @@
-# main.py
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
 from PyQt5.QtGui import QPalette, QBrush, QLinearGradient, QColor
